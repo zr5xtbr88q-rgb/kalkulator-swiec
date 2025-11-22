@@ -1,0 +1,97 @@
+(function(){
+const density=0.9;
+let savedParties=JSON.parse(localStorage.getItem("savedParties")||"[]");
+
+function f(n,d=2){return Number(n).toFixed(d);}
+function calc(V,P,loss,colorFactor){
+  const oil=V*(P/100);
+  const waxMl=V-oil;
+  const waxG=waxMl*density;
+  const lossFactor=1+loss/100;
+  const colorG= waxG*colorFactor*0.05;
+  return {oil,waxMl,waxG,oilLoss:oil*lossFactor,waxLoss:waxMl*lossFactor,waxGLoss:waxG*lossFactor,colorG,colorGLoss:colorG*lossFactor};
+}
+
+const $name=document.getElementById("partyName");
+const $vol=document.getElementById("volume");
+const $pct=document.getElementById("oilPercent");
+const $loss=document.getElementById("lossPercent");
+const $num=document.getElementById("numCandles");
+const $color=document.getElementById("colorIntensity");
+const $res=document.getElementById("result");
+const $saved=document.getElementById("savedPartiesContainer");
+
+function renderParties(){
+  $saved.innerHTML="";
+  savedParties.forEach((p,i)=>{
+    const div=document.createElement("div");
+    div.className="party-card";
+    div.innerHTML=`<h3>${p.name} (Partia ${i+1})</h3>
+<p>Liczba świec: ${p.num}</p>
+<p>Ilość wosku i olejku – bez strat: Wosk ${p.waxTotal} g, Olejek ${p.oilTotal} ml, Barwnik ${p.colorTotal} g</p>
+<p>Ilość wosku i olejku – ze stratami: Wosk ${p.waxLoss} g, Olejek ${p.oilLoss} ml, Barwnik ${p.colorGLoss} g</p>
+<button class="delete-btn">Usuń</button>`;
+    $saved.appendChild(div);
+    div.querySelector(".delete-btn").onclick=()=>{savedParties.splice(i,1); saveToStorage(); renderParties();};
+  });
+}
+function saveToStorage(){localStorage.setItem("savedParties",JSON.stringify(savedParties));}
+
+document.getElementById("calcBtn").onclick=function(){
+  const V=parseFloat($vol.value);
+  const P=parseFloat($pct.value);
+  const L=parseFloat($loss.value)||0;
+  const N=Math.max(1,parseInt($num.value));
+  const colorFactor=parseFloat($color.value);
+  if(!V||!P){$res.innerHTML="Wprowadź poprawne dane";return;}
+  const r=calc(V,P,L,colorFactor);
+  $res.innerHTML=`
+<strong>1 świeca – bez strat:</strong><br>
+Wosk: ${f(r.waxG)} g<br>
+Olejek: ${f(r.oil)} ml<br>
+Barwnik: ${f(r.colorG)} g<br><br>
+<strong>1 świeca – ze stratami:</strong><br>
+Wosk: ${f(r.waxGLoss)} g<br>
+Olejek: ${f(r.oilLoss)} ml<br>
+Barwnik: ${f(r.colorGLoss)} g<br><br>
+<strong>${N} świec – bez strat:</strong><br>
+Wosk: ${f(r.waxG*N)} g<br>
+Olejek: ${f(r.oil*N)} ml<br>
+Barwnik: ${f(r.colorG*N)} g<br><br>
+<strong>${N} świec – ze stratami:</strong><br>
+Wosk: ${f(r.waxGLoss*N)} g<br>
+Olejek: ${f(r.oilLoss*N)} ml<br>
+Barwnik: ${f(r.colorGLoss*N)} g
+`;
+};
+
+document.getElementById("saveBtn").onclick=function(){
+  const name=$name.value.trim()||"Bez nazwy";
+  const V=parseFloat($vol.value);
+  const P=parseFloat($pct.value);
+  const L=parseFloat($loss.value)||0;
+  const N=Math.max(1,parseInt($num.value));
+  const colorFactor=parseFloat($color.value);
+  if(!V||!P){alert("Wprowadź poprawne dane!"); return;}
+  const r=calc(V,P,L,colorFactor);
+  const party={name,num:N,waxTotal:f(r.waxG*N),oilTotal:f(r.oil*N),waxLoss:f(r.waxGLoss*N),oilLoss:f(r.oilLoss*N),colorTotal:f(r.colorG*N),colorGLoss:f(r.colorGLoss*N)};
+  savedParties.push(party);
+  saveToStorage();
+  renderParties();
+};
+
+document.getElementById("newBtn").onclick=function(){
+  $name.value=""; $vol.value=""; $pct.value=""; $loss.value="5"; $num.value="1"; $res.innerHTML="";
+};
+
+renderParties();
+
+// Rozwijanie wskazówek
+document.querySelectorAll('.tip-card').forEach(card=>{
+  const btn=card.querySelector('.expand-btn');
+  btn.onclick=function(e){
+    e.stopPropagation();
+    card.classList.toggle('active');
+  }
+});
+})();
