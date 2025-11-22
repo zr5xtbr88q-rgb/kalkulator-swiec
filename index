@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator świec sojowych 🕯️</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+<h1>Kalkulator do produkcji świeczek sojowych 🕯️</h1>
+<p>Wpisz odpowiednie wartości, a kalkulator policzy odpowiednią ilość wosku, olejku i barwnika. Partie możesz zapisywać i tworzyć kolejne dzięki czemu masz dostęp do wszystkich danych.</p>
+</header>
+
+<main>
+<div class="calculator-card">
+  <h2>Kalkulator świec</h2>
+  
+  <label>Nazwa partii:</label>
+  <input id="partyName" type="text" placeholder="np. Świece waniliowe 1">
+  
+  <label>Objętość naczynia (ml):</label>
+  <input id="volume" type="number" placeholder="np. 120">
+  
+  <label>% objętości olejku:</label>
+  <input id="oilPercent" type="number" placeholder="np. 8">
+  
+  <label>% strat (wosk + olejek):</label>
+  <input id="lossPercent" type="number" placeholder="np. 5" value="5">
+  
+  <label>Liczba świec:</label>
+  <input id="numCandles" type="number" value="1" min="1">
+  
+  <label>Kolor świecy (barwnik):</label>
+  <select id="colorIntensity">
+    <option value="0">Brak</option>
+    <option value="0.5">Delikatny</option>
+    <option value="1">Średni</option>
+    <option value="2">Intensywny</option>
+  </select>
+  
+  <button id="calcBtn" class="calc-btn">Oblicz</button>
+  <button id="saveBtn" class="calc-btn">Zapisz partię</button>
+  <button id="newBtn" class="calc-btn">Nowa partia</button>
+  
+  <div id="result" class="result"></div>
+</div>
+
+<div class="saved-parties" id="savedPartiesContainer"></div>
+
+<section class="tips">
+  <!-- Tutaj wklej wszystkie 8 porad -->
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
